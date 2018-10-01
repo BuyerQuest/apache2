@@ -8,6 +8,7 @@ property :default_site_name, [true, false], default: lazy { node['platform_famil
 property :default_site_enabled, [true, false], default: false
 property :log_dir, String, default: lazy { log_dir }
 property :httpd_t_timeout, String, default: lazy { node['apache']['httpd_t_timeout'] }
+property :mpm, String, default: lazy { default_mpm }
 
 action :install do
   package [apache_pkg, perl_pkg]
@@ -163,11 +164,68 @@ action :install do
     notifies :restart, 'service[apache2]', :delayed
   end
 
-  # if node['apache']['mpm_support'].include?(node['apache']['mpm'])
-  #   include_recipe "apache2::mpm_#{node['apache']['mpm']}"
-  # else
-  #   Chef::Log.warn("apache2: #{node['apache']['mpm']} module is not supported and must be handled separately!")
-  # end
+  # MPM Support Setup
+  case new_resoure.mpm
+  when event
+    if platform_family?('suse')
+      package %w(apache2-prefork apache2-worker) do
+        action :remove
+      end
+
+      package 'apache2-event'
+    else
+      %w(mpm_prefork mpm_worker).each do |mpm|
+        apache_module mpm do
+          enable false
+        end
+      end
+
+      apache_module 'mpm_event' do
+        conf true
+        restart true
+      end
+    end
+
+  when prefork
+    if platform_family?('suse')
+      package %w(apache2-event apache2-worker) do
+        action :remove
+      end
+
+      package 'apache2-prefork'
+    else
+      %w(mpm_event mpm_worker).each do |mpm|
+        apache_module mpm do
+          enable false
+        end
+      end
+
+      apache_module 'mpm_prefork' do
+        conf true
+        restart true
+      end
+    end
+
+  when worker
+    if platform_family?('suse')
+      package %w(apache2-event apache2-prefork) do
+        action :remove
+      end
+
+      package 'apache2-worker'
+    else
+      %w(prefork event).each do |mpm|
+        apache_module mpm do
+          enable false
+        end
+      end
+
+      apache_module 'mpm_worker' do
+        conf true
+        restart true
+      end
+    end
+  end
 
   default_modules.each do |mod|
     recipe = mod =~ /^mod_/ ? mod : "mod_#{mod}"
@@ -187,7 +245,6 @@ action :install do
     action [:enable, :start]
     only_if "#{apache_binary} -t", environment: { 'APACHE_LOG_DIR' => new_resoure.log_dir }, timeout: new_resoure.httpd_t_timeout
   end
-
 end
 
 action_class do

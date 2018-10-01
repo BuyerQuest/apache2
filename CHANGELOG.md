@@ -6,6 +6,8 @@ This file is used to list changes made in each version of the apache2 cookbook.
 
 -   Add helpers: `lib_dir`, `libexec_dir`, `icon_dir`
 -   Add package helpers
+-   Remove all mpm_ recipes
+-   Allow user to set the mpm mode no matter what platform they're on
 
 ## v5.2.1 (04-09-2018)
 

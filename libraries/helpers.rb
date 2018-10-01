@@ -194,7 +194,7 @@ module Apache2
         end
       end
 
-      def mpm_support
+      def default_mpm
         case node['platform']
         when 'debian'
           'worker'

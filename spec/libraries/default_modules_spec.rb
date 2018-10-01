@@ -30,7 +30,7 @@ describe '#default_modules' do
 
     context 'debian' do
       platform 'debian'
-      it { is_expected.to write_log('status, alias, auth_basic, authn_core, authn_file, authz_core, authz_groupfile, authz_host, authz_user, autoindex, deflate, dir, env, mime, negotiation, setenvif')}
+      it { is_expected.to write_log('status, alias, auth_basic, authn_core, authn_file, authz_core, authz_groupfile, authz_host, authz_user, autoindex, deflate, dir, env, mime, negotiation, setenvif') }
     end
 
     context 'arch' do
@@ -73,7 +73,7 @@ describe '#default_modules' do
 
     context 'debian' do
       platform 'debian'
-      it { is_expected.to write_log('status, alias, auth_basic, authn_core, authn_file, authz_core, authz_groupfile, authz_host, authz_user, autoindex, deflate, dir, env, mime, negotiation, setenvif')}
+      it { is_expected.to write_log('status, alias, auth_basic, authn_core, authn_file, authz_core, authz_groupfile, authz_host, authz_user, autoindex, deflate, dir, env, mime, negotiation, setenvif') }
     end
 
     context 'arch' do

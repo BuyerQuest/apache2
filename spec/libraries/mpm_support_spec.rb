@@ -1,7 +1,7 @@
 
 describe '#mpm_support' do
   recipe do
-    log mpm_support
+    log default_mpm
   end
 
   context 'redhat' do
@@ -48,5 +48,4 @@ describe '#mpm_support' do
     platform 'ubuntu'
     it { is_expected.to write_log('event') }
   end
-
 end
