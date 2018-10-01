@@ -25,7 +25,6 @@ if platform_family?('suse')
 
   package 'apache2-event'
 else
-  # apache_module('mpm_itk') { enable false }
   apache_module('mpm_prefork') { enable false }
   apache_module('mpm_worker') { enable false }
 
