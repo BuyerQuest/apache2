@@ -128,7 +128,7 @@ module Apache2
         end
       end
 
-      def log_dir
+      def default_log_dir
         case node['platform_family']
         when 'debian', 'suse'
           '/var/log/apache2'
