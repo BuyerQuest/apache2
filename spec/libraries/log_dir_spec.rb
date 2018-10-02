@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe '#log_dir' do
   recipe do
-    log log_dir
+    log default_log_dir
   end
 
   context 'with rhel family' do

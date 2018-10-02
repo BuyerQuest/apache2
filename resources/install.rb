@@ -4,11 +4,12 @@ property :root_group,  String, default: lazy { node['platform_family'] == 'freeb
 property :apache_user, String, default: lazy { apache_default_user }
 # Configuration
 
-property :default_site_name, [true, false], default: lazy { node['platform_family'] == 'debian' ? '000-default' : 'default' }
+property :default_site_name,    String, default: lazy { node['platform_family'] == 'debian' ? '000-default' : 'default' }
 property :default_site_enabled, [true, false], default: false
-property :log_dir, String, default: lazy { log_dir }
-property :httpd_t_timeout, String, default: lazy { node['apache']['httpd_t_timeout'] }
-property :mpm, String, default: lazy { default_mpm }
+property :log_dir,              String, default: lazy { default_log_dir }
+property :httpd_t_timeout,      Integer, default: 10
+property :mpm,                  String, default: lazy { default_mpm }
+property :listen,               [String, Array], default: %w(80 443)
 
 action :install do
   package [apache_pkg, perl_pkg]
@@ -40,11 +41,6 @@ action :install do
     end
   end
 
-  directory node['apache']['log_dir'] do
-    mode '0755'
-    recursive true
-  end
-
   %w(a2ensite a2dissite a2enmod a2dismod a2enconf a2disconf).each do |modscript|
     link "/usr/sbin/#{modscript}" do
       action :delete
@@ -53,6 +49,7 @@ action :install do
 
     template "/usr/sbin/#{modscript}" do
       source "#{modscript}.erb"
+      cookbook 'apache2'
       mode '0700'
       owner 'root'
       variables(
@@ -64,59 +61,75 @@ action :install do
     end
   end
 
-  if platform_family?('freebsd')
-    directory "#{apache_dir}/Includes" do
-      action :delete
-      recursive true
-    end
+  # unless platform_family?('debian')
+  #   cookbook_file '/usr/local/bin/apache2_module_conf_generate.pl' do
+  #     source 'apache2_module_conf_generate.pl'
+  #     mode '0755'
+  #     owner 'root'
+  #     group node['apache']['root_group']
+  #   end
+  #
+  #   execute 'generate-module-list' do
+  #     command "/usr/local/bin/apache2_module_conf_generate.pl #{lib_dir} #{apache_dir}/mods-available"
+  #     action :nothing
+  #   end
+  # end
 
-    directory "#{apache_dir}/extra" do
-      action :delete
-      recursive true
-    end
+  # if platform_family?('freebsd')
+  #   directory "#{apache_dir}/Includes" do
+  #     action :delete
+  #     recursive true
+  #   end
+  #
+  #   directory "#{apache_dir}/extra" do
+  #     action :delete
+  #     recursive true
+  #   end
+  # end
+  #
+  # if platform_family?('suse')
+  #   directory "#{apache_dir}/vhosts.d" do
+  #     action :delete
+  #     recursive true
+  #   end
+  #
+  #   %w(charset.conv default-vhost.conf default-server.conf default-vhost-ssl.conf errors.conf listen.conf mime.types mod_autoindex-defaults.conf mod_info.conf mod_log_config.conf mod_status.conf mod_userdir.conf mod_usertrack.conf uid.conf).each do |file|
+  #     file "#{apache_dir}/#{file}" do
+  #       action :delete
+  #       backup false
+  #     end
+  #   end
+  # end
+  #
+
+  directory "#{apache_dir}/ssl" do
+    mode '0755'
+    owner 'root'
+    group new_resource.root_group
   end
 
-  if platform_family?('suse')
-    directory "#{apache_dir}/vhosts.d" do
-      action :delete
-      recursive true
-    end
-
-    %w(charset.conv default-vhost.conf default-server.conf default-vhost-ssl.conf errors.conf listen.conf mime.types mod_autoindex-defaults.conf mod_info.conf mod_log_config.conf mod_status.conf mod_userdir.conf mod_usertrack.conf uid.conf).each do |file|
-      file "#{apache_dir}/#{file}" do
-        action :delete
-        backup false
-      end
-    end
-  end
-
-  %W(#{apache_dir}/ssl
-     #{cache_dir}
-  ).each do |path|
-    directory path do
-      mode '0755'
-      owner 'root'
-      group new_resource.root_group
-    end
+  directory cache_dir do
+    mode '0755'
+    owner 'root'
+    group new_resource.root_group
   end
 
   directory lock_dir do
     mode '0755'
     if node['platform_family'] == 'debian'
-      owner new_resoure.apache_user
+      owner new_resource.apache_user
     else
       owner 'root'
     end
     group new_resource.root_group
   end
 
-  # Sett the preferred execution binary - prefork or worker
   template "/etc/sysconfig/#{apache_platform_service_name}" do
     source 'etc-sysconfig-httpd.erb'
+    cookbook 'apache2'
     owner 'root'
-    group new_resoure.root_group
+    group new_resource.root_group
     mode '0644'
-    notifies :restart, 'service[apache2]', :delayed
     variables(
       apache_binary: apache_binary,
       apache_dir: apache_dir
@@ -126,11 +139,11 @@ action :install do
 
   template "#{apache_dir}/envvars" do
     source 'envvars.erb'
+    cookbook 'apache2'
     owner 'root'
-    group new_resoure.root_group
+    group new_resource.root_group
     mode '0644'
-    notifies :reload, 'service[apache2]', :delayed
-    only_if  { platform_family?('debian') }
+    only_if { platform_family?('debian') }
   end
 
   template 'apache2.conf' do
@@ -141,32 +154,33 @@ action :install do
     end
     action :create
     source 'apache2.conf.erb'
+    cookbook 'apache2'
     owner 'root'
-    group new_resoure.root_group
+    group new_resource.root_group
     mode '0644'
     variables(
       apache_binary: apache_binary,
       apache_dir: apache_dir
     )
-    notifies :reload, 'service[apache2]', :delayed
   end
 
-  %w(security charset).each do |conf|
-    apache_conf conf do
-      enable true
-    end
-  end
+  # %w(security charset).each do |conf|
+  #   apache_conf conf do
+  #     enable true
+  #   end
+  # end
 
   template 'ports.conf' do
     path "#{apache_dir}/ports.conf"
     source 'ports.conf.erb'
+    cookbook 'apache2'
     mode '0644'
-    notifies :restart, 'service[apache2]', :delayed
+    variables(listen: new_resource.listen)
   end
 
   # MPM Support Setup
-  case new_resoure.mpm
-  when event
+  case new_resource.mpm
+  when 'event'
     if platform_family?('suse')
       package %w(apache2-prefork apache2-worker) do
         action :remove
@@ -174,11 +188,11 @@ action :install do
 
       package 'apache2-event'
     else
-      %w(mpm_prefork mpm_worker).each do |mpm|
-        apache_module mpm do
-          enable false
-        end
-      end
+      # %w(mpm_prefork mpm_worker).each do |mpm|
+      #   apache_module mpm do
+      #     enable false
+      #   end
+      # end
 
       apache_module 'mpm_event' do
         conf true
@@ -186,7 +200,7 @@ action :install do
       end
     end
 
-  when prefork
+  when 'prefork'
     if platform_family?('suse')
       package %w(apache2-event apache2-worker) do
         action :remove
@@ -194,11 +208,11 @@ action :install do
 
       package 'apache2-prefork'
     else
-      %w(mpm_event mpm_worker).each do |mpm|
-        apache_module mpm do
-          enable false
-        end
-      end
+      # %w(mpm_event mpm_worker).each do |mpm|
+      #   apache_module mpm do
+      #     enable false
+      #   end
+      # end
 
       apache_module 'mpm_prefork' do
         conf true
@@ -206,7 +220,7 @@ action :install do
       end
     end
 
-  when worker
+  when 'worker'
     if platform_family?('suse')
       package %w(apache2-event apache2-prefork) do
         action :remove
@@ -214,11 +228,11 @@ action :install do
 
       package 'apache2-worker'
     else
-      %w(prefork event).each do |mpm|
-        apache_module mpm do
-          enable false
-        end
-      end
+      # %w(prefork event).each do |mpm|
+      #   apache_module mpm do
+      #     enable false
+      #   end
+      # end
 
       apache_module 'mpm_worker' do
         conf true
@@ -227,23 +241,23 @@ action :install do
     end
   end
 
-  default_modules.each do |mod|
-    recipe = mod =~ /^mod_/ ? mod : "mod_#{mod}"
-    include_recipe "apache2::#{recipe}"
-  end
-
-  if new_resource.default_site_enabled
-    web_app new_resource.default_site_name do
-      template 'default-site.conf.erb'
-      enable new_resource.default_site_enabled
-    end
-  end
+  # default_modules.each do |mod|
+  #   recipe = mod =~ /^mod_/ ? mod : "mod_#{mod}"
+  #   include_recipe "apache2::#{recipe}"
+  # end
+  #
+  # if new_resource.default_site_enabled
+  #   web_app new_resource.default_site_name do
+  #     template 'default-site.conf.erb'
+  #     enable new_resource.default_site_enabled
+  #   end
+  # end
 
   service 'apache2' do
     service_name apache_platform_service_name
     supports [:start, :restart, :reload, :status]
     action [:enable, :start]
-    only_if "#{apache_binary} -t", environment: { 'APACHE_LOG_DIR' => new_resoure.log_dir }, timeout: new_resoure.httpd_t_timeout
+    only_if "#{apache_binary} -t", environment: { 'APACHE_LOG_DIR' => new_resource.log_dir }, timeout: new_resource.httpd_t_timeout
   end
 end
 

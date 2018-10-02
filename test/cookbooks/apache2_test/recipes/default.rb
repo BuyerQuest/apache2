@@ -16,5 +16,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+apt_update 'update'
 
-include_recipe 'apache2::default'
+apache2_install 'default_install'
+
+service 'apache2' do
+  extend Apache2::Cookbook::Helpers
+  service_name lazy { apache_platform_service_name }
+  supports restart: true, status: true, reload: true
+  action :nothing
+end

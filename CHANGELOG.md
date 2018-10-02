@@ -8,6 +8,7 @@ This file is used to list changes made in each version of the apache2 cookbook.
 -   Add package helpers
 -   Remove all mpm_ recipes
 -   Allow user to set the mpm mode no matter what platform they're on
+-   Set the server to listen on ports 80 and 443 by default
 
 ## v5.2.1 (04-09-2018)
 
