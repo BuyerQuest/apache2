@@ -182,6 +182,3 @@ default['apache']['proxy']['require']    = 'all denied'
 default['apache']['proxy']['order']      = 'deny,allow'
 default['apache']['proxy']['deny_from']  = 'all'
 default['apache']['proxy']['allow_from'] = 'none'
-
-# Length in second for httpd -t to run
-default['apache']['httpd_t_timeout'] = 10
