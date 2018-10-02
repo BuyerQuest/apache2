@@ -43,8 +43,9 @@ before_script:
 
 script: KITCHEN_LOCAL_YAML=.kitchen.dokken.yml kitchen verify ${INSTANCE}
 
-jobs:
- include:
-   - stage: unit
-     script: chef exec delivery local all
-     env: UNIT_AND_LINT=1
+# New ChefSpec still isn't available in Travis...
+# jobs:
+#  include:
+#    - stage: unit
+#      script: chef exec delivery local all
+#      env: UNIT_AND_LINT=1
