@@ -61,46 +61,46 @@ action :install do
     end
   end
 
-  # unless platform_family?('debian')
-  #   cookbook_file '/usr/local/bin/apache2_module_conf_generate.pl' do
-  #     source 'apache2_module_conf_generate.pl'
-  #     mode '0755'
-  #     owner 'root'
-  #     group node['apache']['root_group']
-  #   end
-  #
-  #   execute 'generate-module-list' do
-  #     command "/usr/local/bin/apache2_module_conf_generate.pl #{lib_dir} #{apache_dir}/mods-available"
-  #     action :nothing
-  #   end
-  # end
+  unless platform_family?('debian')
+    cookbook_file '/usr/local/bin/apache2_module_conf_generate.pl' do
+      source 'apache2_module_conf_generate.pl'
+      cookbook 'apache2'
+      mode '0755'
+      owner 'root'
+      group new_resource.root_group
+    end
 
-  # if platform_family?('freebsd')
-  #   directory "#{apache_dir}/Includes" do
-  #     action :delete
-  #     recursive true
-  #   end
-  #
-  #   directory "#{apache_dir}/extra" do
-  #     action :delete
-  #     recursive true
-  #   end
-  # end
-  #
-  # if platform_family?('suse')
-  #   directory "#{apache_dir}/vhosts.d" do
-  #     action :delete
-  #     recursive true
-  #   end
-  #
-  #   %w(charset.conv default-vhost.conf default-server.conf default-vhost-ssl.conf errors.conf listen.conf mime.types mod_autoindex-defaults.conf mod_info.conf mod_log_config.conf mod_status.conf mod_userdir.conf mod_usertrack.conf uid.conf).each do |file|
-  #     file "#{apache_dir}/#{file}" do
-  #       action :delete
-  #       backup false
-  #     end
-  #   end
-  # end
-  #
+    execute 'generate-module-list' do
+      command "/usr/local/bin/apache2_module_conf_generate.pl #{lib_dir} #{apache_dir}/mods-available"
+      action :nothing
+    end
+  end
+
+  if platform_family?('freebsd')
+    directory "#{apache_dir}/Includes" do
+      action :delete
+      recursive true
+    end
+
+    directory "#{apache_dir}/extra" do
+      action :delete
+      recursive true
+    end
+  end
+
+  if platform_family?('suse')
+    directory "#{apache_dir}/vhosts.d" do
+      action :delete
+      recursive true
+    end
+
+    %w(charset.conv default-vhost.conf default-server.conf default-vhost-ssl.conf errors.conf listen.conf mime.types mod_autoindex-defaults.conf mod_info.conf mod_log_config.conf mod_status.conf mod_userdir.conf mod_usertrack.conf uid.conf).each do |file|
+      file "#{apache_dir}/#{file}" do
+        action :delete
+        backup false
+      end
+    end
+  end
 
   directory "#{apache_dir}/ssl" do
     mode '0755'
@@ -241,11 +241,11 @@ action :install do
     end
   end
 
-  # default_modules.each do |mod|
-  #   recipe = mod =~ /^mod_/ ? mod : "mod_#{mod}"
-  #   include_recipe "apache2::#{recipe}"
-  # end
-  #
+  default_modules.each do |mod|
+    recipe = mod =~ /^mod_/ ? mod : "mod_#{mod}"
+    include_recipe "apache2::#{recipe}"
+  end
+
   # if new_resource.default_site_enabled
   #   web_app new_resource.default_site_name do
   #     template 'default-site.conf.erb'
