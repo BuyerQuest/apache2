@@ -40,7 +40,7 @@ The following platforms and versions are tested and supported using [test-kitche
 -   Amazon Linux 2013.09+
 -   Ubuntu 16.04 / 18.04
 -   Debian 8/9
--   CentOS 6/7
+-   CentOS 7
 -   Fedora Latest
 -   OpenSUSE Leap
 

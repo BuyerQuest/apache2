@@ -8,7 +8,7 @@ ServerRoot "<%= @apache_dir %>"
 #
 # The accept serialization lock file MUST BE STORED ON A LOCAL DISK.
 #
-Mutex file:<%= node['apache']['lock_dir'] %> default
+Mutex file:<%= @lock_dir %> default
 
 #
 # PidFile: The file in which the server should record its process

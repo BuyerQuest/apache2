@@ -2,6 +2,7 @@ include Apache2::Cookbook::Helpers
 
 property :root_group,  String, default: lazy { node['platform_family'] == 'freebsd' ? 'wheel' : 'root' }
 property :apache_user, String, default: lazy { apache_default_user }
+property :apache_group, String, defauly: lazy { apache_default_group }
 # Configuration
 
 property :default_site_name,    String, default: lazy { node['platform_family'] == 'debian' ? '000-default' : 'default' }
@@ -143,6 +144,9 @@ action :install do
     owner 'root'
     group new_resource.root_group
     mode '0644'
+    variables(
+      lock_dir: lock_dir
+    )
     only_if { platform_family?('debian') }
   end
 
@@ -160,7 +164,8 @@ action :install do
     mode '0644'
     variables(
       apache_binary: apache_binary,
-      apache_dir: apache_dir
+      apache_dir: apache_dir,
+      lock_dir: lock_dir
     )
   end
 

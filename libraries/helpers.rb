@@ -117,6 +117,12 @@ module Apache2
           else
             'httpd24'
           end
+        when 'rhel'
+          if node['platform_version'] < '7'
+            'httpd24'
+          else
+            'httpd'
+          end
         when 'debian', 'suse'
           'apache2'
         when 'arch'
