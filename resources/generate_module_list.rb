@@ -4,7 +4,7 @@ action :create do
   unless platform_family?('debian')
     cookbook_file new_resource.file_location do
       source 'apache2_module_conf_generate.pl'
-      mode '0755'
+      mode '0750'
       owner 'root'
       group new_resource.root_group
     end

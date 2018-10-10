@@ -38,3 +38,9 @@ control 'package-installed' do
     end
   end
 end
+
+include_controls 'dev-sec/apache-baseline' do
+  skip_control 'apache-05' # We don't have hardening.conf
+  skip_control 'apache-10' # We don't have hardening.conf
+  skip_control 'apache-13' # We don't enable SSL by defauly (yet)
+end

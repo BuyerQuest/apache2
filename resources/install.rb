@@ -16,16 +16,22 @@ action :install do
   package [apache_pkg, perl_pkg]
   package 'perl-Getopt-Long-Descriptive' if platform?('fedora')
 
+  directory apache_dir do
+    mode '0751'
+    owner 'root'
+    group new_resource.root_group
+  end
+
   %w(sites-available sites-enabled mods-available mods-enabled conf-available conf-enabled).each do |dir|
     directory "#{apache_dir}/#{dir}" do
-      mode '0755'
+      mode '0750'
       owner 'root'
       group new_resource.root_group
     end
   end
 
   directory new_resource.log_dir do
-    mode '0755'
+    mode '0750'
     recursive true
   end
 
@@ -66,7 +72,7 @@ action :install do
     cookbook_file '/usr/local/bin/apache2_module_conf_generate.pl' do
       source 'apache2_module_conf_generate.pl'
       cookbook 'apache2'
-      mode '0755'
+      mode '0750'
       owner 'root'
       group new_resource.root_group
     end
@@ -104,19 +110,19 @@ action :install do
   end
 
   directory "#{apache_dir}/ssl" do
-    mode '0755'
+    mode '0750'
     owner 'root'
     group new_resource.root_group
   end
 
   directory cache_dir do
-    mode '0755'
+    mode '0750'
     owner 'root'
     group new_resource.root_group
   end
 
   directory lock_dir do
-    mode '0755'
+    mode '0750'
     if node['platform_family'] == 'debian'
       owner new_resource.apache_user
     else
@@ -161,7 +167,7 @@ action :install do
     cookbook 'apache2'
     owner 'root'
     group new_resource.root_group
-    mode '0644'
+    mode '0640'
     variables(
       apache_binary: apache_binary,
       apache_dir: apache_dir,
@@ -169,11 +175,11 @@ action :install do
     )
   end
 
-  # %w(security charset).each do |conf|
-  #   apache_conf conf do
-  #     enable true
-  #   end
-  # end
+  %w(security charset).each do |conf|
+    apache_conf conf do
+      enable true
+    end
+  end
 
   template 'ports.conf' do
     path "#{apache_dir}/ports.conf"

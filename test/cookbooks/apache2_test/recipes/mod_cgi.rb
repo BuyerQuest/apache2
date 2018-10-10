@@ -30,6 +30,6 @@ file "#{node['apache_test']['cgi_dir']}/env" do
 echo -e "Content-type: text/plain\n"
 /usr/bin/env
 ).strip
-  mode '0755'
+  mode '0750'
   action :create
 end

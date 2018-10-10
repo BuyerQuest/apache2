@@ -41,7 +41,7 @@ else
   for k in sorted(os.environ):
     print "%s=%s" %(escape(k), escape(os.environ[k]))
   '.strip
-    mode '0755'
+    mode '0750'
     action :create
   end
 
