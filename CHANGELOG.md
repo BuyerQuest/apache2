@@ -10,6 +10,7 @@ This file is used to list changes made in each version of the apache2 cookbook.
 -   Allow user to set the mpm mode no matter what platform they're on
 -   Set the server to listen on ports 80 and 443 by default
 -   Add dev-sec/apache-baseline tests and set cookbook defaults to securre defaults
+-   Add CircleCI
 
 ## v5.2.1 (04-09-2018)
 
