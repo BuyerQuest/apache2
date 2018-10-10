@@ -233,25 +233,25 @@ action :install do
       end
     end
 
-  # when 'worker'
-  #   if platform_family?('suse')
-  #     package %w(apache2-event apache2-prefork) do
-  #       action :remove
-  #     end
-  #
-  #     package 'apache2-worker'
-  #   else
-  #     %w(prefork event).each do |mpm|
-  #       apache_module mpm do
-  #         enable false
-  #       end
-  #     end
-  #
-  #     apache_module 'mpm_worker' do
-  #       conf true
-  #       restart true
-  #     end
-  #   end
+    # when 'worker'
+    #   if platform_family?('suse')
+    #     package %w(apache2-event apache2-prefork) do
+    #       action :remove
+    #     end
+    #
+    #     package 'apache2-worker'
+    #   else
+    #     %w(prefork event).each do |mpm|
+    #       apache_module mpm do
+    #         enable false
+    #       end
+    #     end
+    #
+    #     apache_module 'mpm_worker' do
+    #       conf true
+    #       restart true
+    #     end
+    #   end
   end
 
   default_modules.each do |mod|

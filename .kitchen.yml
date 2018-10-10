@@ -29,9 +29,9 @@ suites:
   - name: default
     run_list:
     - recipe[test::default]
-  - name: ssl
-    run_list:
-    - recipe[test::mod_ssl]
+  # - name: ssl
+  #   run_list:
+  #   - recipe[test::mod_ssl]
 
   # - name: prefork
   #   run_list:
