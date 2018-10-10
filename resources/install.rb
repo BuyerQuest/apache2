@@ -192,7 +192,7 @@ action :install do
   end
 
   # MPM Support Setup
-  # case new_resource.mpm
+  case new_resource.mpm
   # when 'event'
   #   if platform_family?('suse')
   #     package %w(apache2-prefork apache2-worker) do
@@ -213,26 +213,26 @@ action :install do
   #     end
   #   end
   #
-  # when 'prefork'
-  #   if platform_family?('suse')
-  #     package %w(apache2-event apache2-worker) do
-  #       action :remove
-  #     end
-  #
-  #     package 'apache2-prefork'
-  #   else
-  #     %w(mpm_event mpm_worker).each do |mpm|
-  #       apache_module mpm do
-  #         enable false
-  #       end
-  #     end
-  #
-  #     apache_module 'mpm_prefork' do
-  #       conf true
-  #       restart true
-  #     end
-  #   end
-  #
+  when 'prefork'
+    if platform_family?('suse')
+      package %w(apache2-event apache2-worker) do
+        action :remove
+      end
+
+      package 'apache2-prefork'
+    else
+      %w(mpm_event mpm_worker).each do |mpm|
+        apache_module mpm do
+          enable false
+        end
+      end
+
+      apache_module 'mpm_prefork' do
+        conf true
+        restart true
+      end
+    end
+
   # when 'worker'
   #   if platform_family?('suse')
   #     package %w(apache2-event apache2-prefork) do
@@ -252,7 +252,7 @@ action :install do
   #       restart true
   #     end
   #   end
-  # end
+  end
 
   default_modules.each do |mod|
     recipe = mod =~ /^mod_/ ? mod : "mod_#{mod}"
