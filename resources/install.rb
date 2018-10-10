@@ -151,7 +151,8 @@ action :install do
     group new_resource.root_group
     mode '0644'
     variables(
-      lock_dir: lock_dir
+      lock_dir: lock_dir,
+      log_dir: new_resource.log_dir
     )
     only_if { platform_family?('debian') }
   end
@@ -171,7 +172,8 @@ action :install do
     variables(
       apache_binary: apache_binary,
       apache_dir: apache_dir,
-      lock_dir: lock_dir
+      lock_dir: lock_dir,
+      log_dir: new_resource.log_dir
     )
   end
 

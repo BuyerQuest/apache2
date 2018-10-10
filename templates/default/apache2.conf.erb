@@ -113,7 +113,7 @@ HostnameLookups Off
 <% if node['apache']['error_log'] =~ /^syslog:/ || node['apache']['error_log'] =~ /^\|/ %>
 ErrorLog <%= node['apache']['error_log'] %>
 <% else %>
-ErrorLog <%= node['apache']['log_dir'] %>/<%= node['apache']['error_log'] %>
+ErrorLog <%= @log_dir %>/<%= node['apache']['error_log'] %>
 <% end %>
 
 #
