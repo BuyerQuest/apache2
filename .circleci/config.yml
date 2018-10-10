@@ -39,11 +39,11 @@ workflows:
           requires: [ lint, danger ]
       - kitchen/dokken-single:
           name: ubuntu-16.04
-          platform: ubuntu-16.04
+          platform: ubuntu-1604
           suite: default
           requires: [ lint, danger ]
       - kitchen/dokken-single:
           name: ubuntu-18.04
-          platform: ubuntu-18.04
+          platform: ubuntu-1804
           suite: default
           requires: [ lint, danger ]
