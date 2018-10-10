@@ -32,11 +32,11 @@ workflows:
           platform: fedora-latest
           suite: default
           requires: [ lint, danger ]
-      - kitchen/dokken-single:
-          name: opensuse-leap-42
-          platform: opensuse-leap
-          suite: default
-          requires: [ lint, danger ]
+      # - kitchen/dokken-single:
+      #     name: opensuse-leap-42
+      #     platform: opensuse-leap
+      #     suite: default
+      #     requires: [ lint, danger ]
       - kitchen/dokken-single:
           name: ubuntu-16.04
           platform: ubuntu-1604
