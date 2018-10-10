@@ -11,6 +11,7 @@ This file is used to list changes made in each version of the apache2 cookbook.
 -   Set the server to listen on ports 80 and 443 by default
 -   Add dev-sec/apache-baseline tests and set cookbook defaults to securre defaults
 -   Add CircleCI
+-   Cleanup test integration directory
 
 ## v5.2.1 (04-09-2018)
 
