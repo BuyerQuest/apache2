@@ -34,7 +34,7 @@ workflows:
           requires: [ lint, danger ]
       - kitchen/dokken-single:
           name: opensuse-leap-42
-          platform: opensuse-leap-42
+          platform: opensuse-leap
           suite: default
           requires: [ lint, danger ]
       - kitchen/dokken-single:
