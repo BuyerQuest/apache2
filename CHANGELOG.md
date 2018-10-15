@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of the apache2 cookbook.
 
+## v4.0.1 (2018-10-15)
+
+- Backported fix for php5 on CentOS 7
+
 ## v4.0.0 (2017-07-10)
 
 ### Breaking changes
