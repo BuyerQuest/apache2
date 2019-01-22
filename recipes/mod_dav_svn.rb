@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-include_recipe 'apache2::mod_dav'
+apache2_module 'dav'
 
 package 'libapache2-svn' do
   case node['platform_family']
@@ -40,4 +40,4 @@ when 'rhel', 'fedora', 'suse', 'amazon'
   end
 end
 
-apache_module 'dav_svn'
+apache2_module 'dav_svn'

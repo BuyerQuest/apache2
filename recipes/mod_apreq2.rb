@@ -19,8 +19,6 @@
 # limitations under the License.
 #
 
-include_recipe 'apache2::default'
-
 case node['platform_family']
 when 'debian'
   package 'libapache2-mod-apreq2'
@@ -47,4 +45,4 @@ file "#{apache_dir}/conf.d/apreq.conf" do
   only_if { ::Dir.exist?("#{apache_dir}/conf.d") }
 end
 
-apache_module 'apreq'
+apache2_module 'apreq'

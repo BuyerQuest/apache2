@@ -17,6 +17,6 @@
 # limitations under the License.
 #
 
-apache_module 'headers' do
-  restart true
+apache2_module 'headers' do
+  apache_service_notification :restart
 end

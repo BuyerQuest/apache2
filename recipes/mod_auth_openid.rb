@@ -101,17 +101,18 @@ bash 'install-mod_auth_openid' do
   #{make_cmd} install
   EOH
   creates "#{libexec_dir}/mod_auth_openid.so"
-  notifies :restart, 'service[apache2]'
+  notifies :restart, 'service[apache2]', :delayed
   not_if "test -f #{libexec_dir}/mod_auth_openid.so"
 end
 
 template "#{apache_dir}/mods-available/authopenid.load" do
   source 'mods/authopenid.load.erb'
+  cookbook 'apache2'
   owner 'root'
   group node['apache']['root_group']
   mode '0644'
 end
 
-apache_module 'authopenid' do
+apache2_module 'authopenid' do
   filename 'mod_auth_openid.so'
 end

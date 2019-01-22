@@ -21,8 +21,6 @@ if node['apache']['listen'] == ['*:80']
   node.default['apache']['listen'] += ["*:#{node['apache']['mod_ssl']['port']}"]
 end
 
-include_recipe 'apache2::default'
-
 if platform_family?('rhel', 'fedora', 'suse', 'amazon')
   package node['apache']['mod_ssl']['pkg_name'] do
     notifies :run, 'execute[generate-module-list]', :immediately
@@ -35,8 +33,6 @@ if platform_family?('rhel', 'fedora', 'suse', 'amazon')
   end
 end
 
-apache_module 'ssl' do
-  conf true
-end
+apache2_module 'ssl'
 
-include_recipe 'apache2::mod_socache_shmcb'
+apache2_module 'socache_shmcb'

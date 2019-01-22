@@ -17,6 +17,4 @@
 # limitations under the License.
 #
 
-apache_module 'actions' do
-  conf true
-end
+apache2_module 'actions'

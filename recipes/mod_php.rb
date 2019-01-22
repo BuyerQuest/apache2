@@ -19,11 +19,12 @@
 # limitations under the License.
 #
 
-if node['apache']['mpm'] != 'prefork'
-  Chef::Log.warn('apache2::mod_php generally is expected to be run under a non-threaded MPM, such as prefork')
-  Chef::Log.warn('See http://php.net/manual/en/faq.installation.php#faq.installation.apache2')
-  Chef::Log.warn("Currently the apache2 cookbook is configured to use the '#{node['apache']['mpm']}' MPM")
-end
+# We're not able to support this behaviour
+# if node['apache']['mpm'] != 'prefork'
+#   Chef::Log.warn('apache2::mod_php generally is expected to be run under a non-threaded MPM, such as prefork')
+#   Chef::Log.warn('See http://php.net/manual/en/faq.installation.php#faq.installation.apache2')
+#   Chef::Log.warn("Currently the apache2 cookbook is configured to use the '#{node['apache']['mpm']}' MPM")
+# end
 
 case node['platform_family']
 when 'debian'
@@ -73,11 +74,12 @@ end
 
 template "#{apache_dir}/mods-available/#{node['apache']['mod_php']['module_name']}.conf" do
   source 'mods/php.conf.erb'
+  cookbook 'apache2'
   mode '0644'
   notifies :reload, 'service[apache2]', :delayed
 end
 
-apache_module node['apache']['mod_php']['module_name'] do
+apache2_module node['apache']['mod_php']['module_name'] do
   conf false
   filename node['apache']['mod_php']['so_filename']
 end
